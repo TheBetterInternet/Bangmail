@@ -47,3 +47,7 @@ export BANGMAIL_INBOX_PATH="/tmp/bangmail/inbox"
 - `bangmail`: CLI client for sending/fetching messages
 - Messages encrypted at rest with server key
 - Automatic message deletion after delivery
+
+## Spec
+
+Read the [spec.md](spec.md) file.
