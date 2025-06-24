@@ -16,7 +16,14 @@ import (
 	"strings"
 	"time"
 	"github.com/gliderlabs/ssh"
+	"regexp"
+	"errors"
 )
+
+var validUsername = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,32}$`)
+func isValidUsername(u string) bool {
+    return validUsername.MatchString(u)
+}
 
 type Message struct {
 	From      string `json:"from"`
@@ -142,6 +149,9 @@ func (s *Server) createAccount(username, bangAddress string) error {
 	}
 	
 	accountPath := s.getAccountPath(username)
+	if !isValidUsername(username) {
+    return errors.New("invalid username")
+	}
 	return os.WriteFile(accountPath, encrypted, 0644)
 }
 
