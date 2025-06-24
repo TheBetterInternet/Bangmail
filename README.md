@@ -24,7 +24,7 @@ export BANGMAIL_INBOX_PATH="/tmp/bangmail/inbox"
 
 ### Fetch Messages
 ```bash
-./bin/bangmail fetch neo!localhost:2222
+BANGMAIL_PORT=2222 ./bin/bangmail fetch neo!localhost
 ```
 
 ## Environment Variables
