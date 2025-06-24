@@ -128,6 +128,9 @@ func (s *Server) getAccountPath(username string) string {
 }
 
 func (s *Server) createAccount(username, bangAddress string) error {
+	if !isValidUsername(username) {
+		return errors.New("invalid username")
+	}
 	if err := os.MkdirAll(s.accountPath, 0755); err != nil {
 		return err
 	}
@@ -149,9 +152,6 @@ func (s *Server) createAccount(username, bangAddress string) error {
 	}
 	
 	accountPath := s.getAccountPath(username)
-	if !isValidUsername(username) {
-    return errors.New("invalid username")
-	}
 	return os.WriteFile(accountPath, encrypted, 0644)
 }
 
@@ -296,8 +296,15 @@ func (s *Server) handleReceive(sess ssh.Session, args []string) {
 	}
 	
 	authMsg.Message.To = recipient
-	if authMsg.Message.Timestamp == 0 {
-		authMsg.Message.Timestamp = time.Now().Unix()
+	authMsg.Message.Timestamp = time.Now().Unix()
+	if len(authMsg.Message.Subject) > 256 {
+		fmt.Fprintln(sess, "ERROR: subject too long (>256)")
+		return
+	}
+
+	if len(authMsg.Message.Body) > 10000 {
+		fmt.Fprintln(sess, "ERROR: body too long (>10000)")
+		return
 	}
 	
 	if err := s.storeMessage(recipient, &authMsg.Message); err != nil {
