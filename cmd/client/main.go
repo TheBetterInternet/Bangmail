@@ -60,8 +60,7 @@ func (c *Client) createAccount(bangAddress string) error {
 	if err != nil {
 		return err
 	}
-	defer session.Close()
-	
+	defer session.Close()	
 	stdout, err := session.StdoutPipe()
 	if err != nil {
 		return err
@@ -286,8 +285,12 @@ func (c *Client) fetchMessages(addr string) ([]*Message, error) {
 	if err != nil {
 		return nil, err
 	}
-	
-	cmd := fmt.Sprintf("bangmail-fetch %s", user)
+  
+	account, err := c.getAccount(user)
+	if err != nil {
+		return nil, err
+	}
+	cmd := fmt.Sprintf("bangmail-fetch %s %d", user, account.Created)
 	if err := session.Start(cmd); err != nil {
 		return nil, err
 	}
